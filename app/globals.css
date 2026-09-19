@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-orange: #FF6B35;
+  --secondary-blue: #1E3A8A;
+  --background-white: #FFFFFF;
+  --text-dark: #1F2937;
+  --text-light: #6B7280;
+  --border-light: #E5E7EB;
+  --border-dark: #D1D5DB;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-white: #1F2937;
+    --text-dark: #F3F4F6;
+    --text-light: #D1D5DB;
+    --border-light: #374151;
+    --border-dark: #4B5563;
+  }
+}
+
+* {
+  @apply border-border-light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-text-dark dark:bg-gray-900 dark:text-gray-100;
+  font-feature-settings: "rounding" 1;
+}
+
+a {
+  @apply text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300;
+}
+
+/* Custom utility classes */
+.card {
+  @apply rounded-lg border border-border-light bg-white p-4 shadow-sm dark:border-border-dark dark:bg-gray-800;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-lg bg-orange-600 px-4 py-2 font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-lg border border-border-dark bg-white px-4 py-2 font-medium text-text-dark hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 dark:border-border-light dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+.input {
+  @apply rounded-lg border border-border-dark bg-white px-3 py-2 text-text-dark placeholder-text-light focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-border-light dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-text-dark dark:text-gray-300;
+}
+
+.form-group {
+  @apply mb-4 flex flex-col gap-1;
+}
+
+.table-base {
+  @apply min-w-full border-collapse;
+}
+
+.table-base th {
+  @apply border-b border-border-dark bg-gray-50 px-4 py-2 text-left text-sm font-semibold text-text-dark dark:border-border-light dark:bg-gray-800 dark:text-gray-100;
+}
+
+.table-base td {
+  @apply border-b border-border-light px-4 py-2 text-sm text-text-dark dark:border-border-dark dark:text-gray-300;
+}
+
+.table-base tr:hover {
+  @apply bg-gray-50 dark:bg-gray-700;
+}
+
+.nav-item {
+  @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-light hover:bg-gray-100 hover:text-text-dark dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100;
+}
+
+.nav-item.active {
+  @apply bg-blue-50 text-blue-600 dark:bg-blue-900 dark:text-blue-400;
+}
+
+/* Loading skeleton */
+.skeleton {
+  @apply animate-pulse rounded bg-gray-200 dark:bg-gray-700;
+}
