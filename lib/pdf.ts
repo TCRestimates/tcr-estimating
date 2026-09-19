@@ -1,4 +1,3 @@
-// @ts-nocheck - Puppeteer is optional and may not be available in build environments
 /**
  * HTML to PDF conversion options
  */
@@ -18,67 +17,16 @@ export interface PDFOptions {
 
 /**
  * Generate PDF from HTML content
- * Falls back to returning HTML for browser-based PDF generation if Puppeteer unavailable
+ * Returns HTML with print styles for browser-based PDF generation
  */
 export async function generatePDFFromHTML(
   html: string,
   options: PDFOptions = {}
 ): Promise<Buffer> {
   try {
-    // Try to use Puppeteer if available
-    let puppeteer: any = null
-    try {
-      // @ts-expect-error puppeteer is optional in build environment
-      puppeteer = (await import('puppeteer')).default
-    } catch (e) {
-      // Puppeteer not available, will fall back to HTML
-      puppeteer = null
-    }
-
-    if (puppeteer) {
-      let browser
-
-      try {
-        // Launch browser
-        browser = await puppeteer.launch({
-          headless: 'new',
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        })
-
-        // Create page
-        const page = await browser.newPage()
-
-        // Set content
-        await page.setContent(html, {
-          waitUntil: 'networkidle0',
-        })
-
-        // Generate PDF
-        const pdfBuffer = await page.pdf({
-          format: options.format || 'A4',
-          margin: options.margin || {
-            top: '0.5in',
-            bottom: '0.5in',
-            left: '0.5in',
-            right: '0.5in',
-          },
-          displayHeaderFooter: options.displayHeaderFooter || false,
-          headerTemplate: options.headerTemplate,
-          footerTemplate: options.footerTemplate,
-          printBackground: options.printBackground || true,
-        })
-
-        return pdfBuffer
-      } finally {
-        if (browser) {
-          await browser.close()
-        }
-      }
-    }
-
-    // Fallback: Return HTML with embedded print styles
-    // The client can use browser's print-to-PDF functionality
-    const fallbackHtml = `
+    // Return HTML with embedded print styles
+    // Browsers can use print-to-PDF functionality to save as PDF
+    const htmlWithStyles = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,17 +34,15 @@ export async function generatePDFFromHTML(
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     @media print {
-      body { margin: 0; padding: 0; }
-      .no-print { display: none !important; }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
     }
   </style>
-  <script>
-    window.onload = function() {
-      setTimeout(() => {
-        window.print();
-      }, 1000);
-    };
-  </script>
 </head>
 <body>
 ${html}
@@ -104,7 +50,7 @@ ${html}
 </html>
     `
 
-    return Buffer.from(fallbackHtml, 'utf-8')
+    return Buffer.from(htmlWithStyles, 'utf-8')
   } catch (error) {
     console.error('PDF generation error:', error)
     // Return HTML as fallback even on error
