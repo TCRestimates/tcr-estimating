@@ -25,7 +25,14 @@ export async function generatePDFFromHTML(
 ): Promise<Buffer> {
   try {
     // Try to use Puppeteer if available
-    const puppeteer = await import('puppeteer').then(mod => mod.default).catch(() => null)
+    let puppeteer: any = null
+    try {
+      // @ts-expect-error puppeteer is optional in build environment
+      puppeteer = (await import('puppeteer')).default
+    } catch (e) {
+      // Puppeteer not available, will fall back to HTML
+      puppeteer = null
+    }
 
     if (puppeteer) {
       let browser
