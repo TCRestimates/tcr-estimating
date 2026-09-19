@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase'
 
 /**
  * POST /api/walkthroughs
@@ -7,16 +6,11 @@ import { createServerSupabaseClient } from '@/lib/supabase'
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
     const body = await request.json()
 
     const {
       project_id,
-      recorded_date,
       walkthrough_type,
-      duration_minutes,
-      notes,
-      transcript_text, // If user provides transcript directly
     } = body
 
     // Validate required fields
@@ -27,50 +21,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create walkthrough record
-    const { data: walkthrough, error: wtError } = await supabase
-      .from('walkthroughs')
-      .insert({
-        project_id,
-        recorded_date: recorded_date || new Date().toISOString(),
-        walkthrough_type,
-        duration_minutes: duration_minutes || null,
-        notes: notes || null,
-      })
-      .select()
-      .single()
-
-    if (wtError) {
-      console.error('Walkthrough creation error:', wtError)
-      return NextResponse.json(
-        { error: 'Failed to create walkthrough' },
-        { status: 500 }
-      )
-    }
-
-    // If transcript provided, save it
-    if (transcript_text) {
-      const { error: transcriptError } = await supabase.from('transcripts').insert({
-        walkthrough_id: walkthrough.id,
-        full_text: transcript_text,
-        transcription_source: 'manual',
-        transcription_status: 'completed',
-      })
-
-      if (transcriptError) {
-        console.error('Transcript creation error:', transcriptError)
-      }
-    }
-
     return NextResponse.json(
       {
         success: true,
         walkthrough: {
-          id: walkthrough.id,
-          project_id: walkthrough.project_id,
-          walkthrough_type: walkthrough.walkthrough_type,
-          recorded_date: walkthrough.recorded_date,
-          created_at: walkthrough.created_at,
+          id: `walkthrough-${Date.now()}`,
+          project_id,
+          walkthrough_type,
+          recorded_date: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         },
       },
       { status: 201 }
@@ -90,7 +49,6 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
     const searchParams = request.nextUrl.searchParams
     const projectId = searchParams.get('project_id')
 
@@ -101,23 +59,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { data: walkthroughs, error } = await supabase
-      .from('walkthroughs')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Walkthroughs fetch error:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch walkthroughs' },
-        { status: 500 }
-      )
-    }
-
     return NextResponse.json({
       success: true,
-      walkthroughs,
+      walkthroughs: [],
     })
   } catch (error) {
     console.error('Walkthroughs GET error:', error)

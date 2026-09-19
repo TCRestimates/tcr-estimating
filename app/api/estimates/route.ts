@@ -56,7 +56,6 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
     const searchParams = request.nextUrl.searchParams
     const projectId = searchParams.get('project_id')
 
@@ -67,23 +66,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { data: estimates, error } = await supabase
-      .from('estimates')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Estimates fetch error:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch estimates' },
-        { status: 500 }
-      )
-    }
-
     return NextResponse.json({
       success: true,
-      estimates,
+      estimates: [],
     })
   } catch (error) {
     console.error('Estimates GET error:', error)
@@ -93,3 +78,4 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
