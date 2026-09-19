@@ -80,7 +80,7 @@ export async function POST(
     const pdfBuffer = await generatePDFFromHTML(html)
 
     // Return PDF as file download
-    const response = new NextResponse(pdfBuffer, {
+    const response = new NextResponse(Buffer.from(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
