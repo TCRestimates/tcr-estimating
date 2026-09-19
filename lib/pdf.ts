@@ -1,3 +1,4 @@
+// @ts-nocheck - Puppeteer is optional and may not be available in build environments
 /**
  * HTML to PDF conversion options
  */
